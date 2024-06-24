@@ -1,0 +1,3 @@
+Order 1:
+    RULED OUT: general linear, basic quadratic, exp(x^2)
+    DEFINITELY POSSIBLE: exponential, constant

@@ -3,10 +3,9 @@ from glob import glob
 
 
 # Expansion function pointers
-def generateNodeDict(treeDirPath):
-    global nodeList
+def generateNodeList(treeDirPath):
     # [-6] extracts the ? letter
-    nodeList = [file[-6] for file in glob(treeDirPath + "/?.json")]
+    return [file[-6] for file in glob(treeDirPath + "/?.json")]
 
 
 nodeList = None
@@ -16,8 +15,9 @@ nodeList = None
 def processNode(tree, nodeId, nameCount, treeDirPath):
     node = tree.get_node(nodeId)
 
+    global nodeList
     if nodeList is None:
-        generateNodeDict(treeDirPath)
+        nodeList = generateNodeList(treeDirPath)
 
     if node.tag in nodeList:
         load_tree(treeDirPath + node.tag + ".json", tree, tree.get_node(nodeId))

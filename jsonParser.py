@@ -5,7 +5,10 @@ tree_dict = {}
 
 
 # Wrapper function for loading pre-existing (base) tree
-def load_tree(file_path, tree=Tree(), parent=None):
+def load_tree(file_path, tree=None, parent=None):
+    # Make a NEW default tree every time (as opposed to inline syntax)
+    if not tree:
+        tree = Tree()
     # Don't load the file every time
     if file_path in tree_dict:
         json_tree = tree_dict[file_path]
@@ -14,13 +17,13 @@ def load_tree(file_path, tree=Tree(), parent=None):
             json_tree = json.load(f)
             tree_dict[file_path] = json_tree
 
-    recurse_tree(json_tree, tree, parent)
+    instantiate_subtree(json_tree, tree, parent)
 
     return tree
 
 
 # Recursive function call for tree loading
-def recurse_tree(json_tree, tree, parent=None):
+def instantiate_subtree(json_tree, tree, parent=None):
     # Case where only one node is in tree
     if isinstance(json_tree, str):
         tree.create_node(tag=json_tree, identifier=chr(1), parent=parent)
@@ -44,6 +47,7 @@ def recurse_tree(json_tree, tree, parent=None):
             tree.create_node(tag=list(value)[0],
                              identifier=parent.identifier + chr(counter + 1),
                              parent=parent)
-            recurse_tree(json_tree[k]['children'][counter],
-                         tree,
-                         tree.get_node(parent.identifier + chr(counter + 1)))
+            instantiate_subtree(json_tree[k]['children'][counter],
+                                tree,
+                                tree.get_node(parent.identifier
+                                              + chr(counter + 1)))

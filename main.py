@@ -1,4 +1,5 @@
 import argparse
+import numpy as np
 from tabulate import tabulate
 from processNode import processNode
 from jsonParser import load_tree
@@ -24,8 +25,10 @@ parser.add_argument('-nc', '--nocumsum',
                     help='Cumulative sum toggle', action='store_true')
 parser.add_argument('-nr', '--norows',
                     help='Row sum toggle', action='store_true')
-parser.add_argument('-a', '--avg',
-                    help='Average row ratio toggle', action='store_true')
+parser.add_argument('-am', '--arithmean',
+                    help='Arithmetic mean ratio toggle', action='store_true')
+parser.add_argument('-gm', '--geommean',
+                    help='Geometric mean ratio toggle', action='store_true')
 parser.add_argument('-nra', '--noratio',
                     help='Row ratio toggle', action='store_true')
 parser.add_argument('-fun', '--function',
@@ -69,7 +72,7 @@ if args.vis or args.parentseq:
             nameCount = processNode(tree, nodeId, nameCount, treeDirPath)
 
             # Form parent_list
-            if tree.parent(nodeId) is not None:
+            if args.parentseq and tree.parent(nodeId) is not None:
                 parent_list.append(tree.parent(nodeId).tag)
 
         table["Row Sums"].append(len(nodeIds))
@@ -116,13 +119,22 @@ else:
 table["Row Ratios"] = [table["Row Sums"][i + 1] / table["Row Sums"][i]
                        for i in range(len(table["Row Sums"]) - 1)]
 table["Row Ratios"].insert(0, "inf")
-if args.avg:
-    table["Ratio Avg"] = [table["Row Ratios"][1]]
+if args.arithmean:
+    table["Ratio Avg (Arith)"] = [table["Row Ratios"][1]]
     for i, row_ratio in enumerate(table["Row Ratios"][2:], 1):
-        table["Ratio Avg"].append(((table["Ratio Avg"][i - 1] * i)
-                                   + float(row_ratio))
-                                  / (i + 1))
-    table["Ratio Avg"].insert(0, "inf")
+        table["Ratio Avg (Arith)"].append(((table["Ratio Avg (Arith)"][i - 1] * i)
+                                           + float(row_ratio))
+                                          / (i + 1))
+    table["Ratio Avg (Arith)"].insert(0, "inf")
+if args.geommean:
+    table["Ratio Avg (Geom)"] = [table["Row Ratios"][1]]
+    for i, row_ratio in enumerate(table["Row Ratios"][2:], 1):
+        # Use logs to avoid overflow
+        mean = np.exp((np.log(table["Ratio Avg (Geom)"][i - 1]) * i
+                       + np.log(float(row_ratio)))
+                      / (i + 1))
+        table["Ratio Avg (Geom)"].append(mean)
+    table["Ratio Avg (Geom)"].insert(0, "inf")
 
 
 # Outputs

@@ -1,0 +1,42 @@
+{
+    "O": {
+        "children": [
+            {
+                "O": {
+                    "children": [
+                        {
+                            "O": {
+                                "children": [
+                                    {
+                                        "O": {
+                                            "children": [
+                                                {
+                                                    "O": {
+                                                        "children": [
+                                                            {
+                                                                "O": {
+                                                                    "children": [
+                                                                        "G",
+                                                                        {"O": {
+                                                                            "children": [
+                                                                                "G"
+                                                                            ]
+                                                                        }}
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

@@ -1,3 +1,16 @@
 Order 1:
     RULED OUT: general linear, basic quadratic, exp(x^2)
-    DEFINITELY POSSIBLE: exponential, constant
+    DEFINITELY POSSIBLE: exponential, constant (probably the only things that are possible... including average exponential)
+
+    CONJECTURE: Asymptotically, the ratio depends only on the depth and number of the self-reference nodes (i.e. ignores the stems that place them, and the non self-reference nodes)
+
+Order 2:
+    MARRIED TREES 1:
+        F_n = S_{n-3} + 3 (WHAT THE HELL???)
+        This offset self-reference seems characteristic of order 2 sequences (probably especially married sequences)
+        Let's consider a sequence with the 2-rule:
+            F: 1, 2, 3, 5, 8, 13, 21, 34
+            S: 1, 3, 6, 11, 19, 32
+        Fibonacci... I was wrong... (tbf, it's Fibonacci excludng the first element)
+        Perfectly capture by the tree "JoshMarriedCore1" which has order 1
+        This is so beautiful... so lucky I found it

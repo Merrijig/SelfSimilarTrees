@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import os
 from tabulate import tabulate
 from processNode import processNode
 from jsonParser import load_tree
@@ -167,5 +168,7 @@ if int(args.floatdp) > max_trust:
     print(f"Floating point arithmetic can not be trusted past {max_trust} d.p.")
 
 if args.vis:
+    if not os.path.exists("output/"):
+        os.mkdir("output")
     tree.to_graphviz("output/output.gv")
     run([args.function, "-T" + args.format, "-y", "output/output.gv", "-o", "output/output." + args.format])

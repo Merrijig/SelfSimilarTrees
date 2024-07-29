@@ -1,4 +1,5 @@
 import json
+from uuid import uuid4
 from treelib import Tree
 
 tree_dict = {}
@@ -26,28 +27,29 @@ def load_tree(file_path, tree=None, parent=None):
 def instantiate_subtree(json_tree, tree, parent=None):
     # Case where only one node is in tree
     if isinstance(json_tree, str):
-        tree.create_node(tag=json_tree, identifier=chr(1), parent=parent)
+        tree.create_node(tag=json_tree, identifier=uuid4(), parent=parent)
         return
 
     k, value = list(json_tree.items())[0]
 
     # Create root
     if parent is None:
-        tree.create_node(tag=str(k), identifier=chr(1))
-        parent = tree.get_node(chr(1))
+        new_id = uuid4()
+        tree.create_node(tag=str(k), identifier=new_id)
+        parent = tree.get_node(new_id)
 
     for counter, value in enumerate(json_tree[k]['children']):
         # Base case
         if isinstance(json_tree[k]['children'][counter], str):
             tree.create_node(tag=value,
-                             identifier=parent.identifier + chr(counter + 1),
+                             identifier=uuid4(),
                              parent=parent)
         # Recursive Case
         else:
+            new_id = uuid4()
             tree.create_node(tag=list(value)[0],
-                             identifier=parent.identifier + chr(counter + 1),
+                             identifier=new_id,
                              parent=parent)
             instantiate_subtree(json_tree[k]['children'][counter],
                                 tree,
-                                tree.get_node(parent.identifier
-                                              + chr(counter + 1)))
+                                tree.get_node(new_id))

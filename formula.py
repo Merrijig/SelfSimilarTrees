@@ -1,7 +1,6 @@
 import roman
+from uuid import uuid4
 from treelib import Tree
-
-glob_count = 1
 
 
 def base(numeral, ref_letter):
@@ -9,24 +8,25 @@ def base(numeral, ref_letter):
     tree = Tree()
     length = roman.to_num(numeral)
 
+    new_id = uuid4()
     tree.create_node(tag="O",
-                     identifier=chr(glob_count),
+                     identifier=new_id,
                      parent=None)
-    parent = tree.get_node(chr(glob_count))
+    parent = tree.get_node(new_id)
 
     for i in range(length - 1):
+        new_id = uuid4()
         tree.create_node(tag="O",
-                         identifier=parent.identifier + chr(1),
+                         identifier=new_id,
                          parent=parent)
-        parent = tree.get_node(parent.identifier + chr(1))
+        parent = tree.get_node(new_id)
 
     # Allow for stub trees
     if length >= 1:
         tree.create_node(tag=ref_letter,
-                         identifier=parent.identifier + chr(1),
+                         identifier=uuid4(),
                          parent=parent)
 
-    glob_count += 1
     return tree
 
 
@@ -40,8 +40,12 @@ def plus(tree1, tree2, ref_letter):
         if leaf.tag != ref_letter:
             continue
 
-        tree1.merge(leaf.identifier, tree2)
+        # Change ids to avoid repetition
+        for node in tree2.all_nodes():
+            tree2.update_node(node.identifier, identifier=uuid4())
+
         leaf.tag = "O"
+        tree1.merge(leaf.identifier, tree2)
 
     return tree1
 

@@ -9,12 +9,12 @@ from format import print_title
 
 # Args
 parser = argparse.ArgumentParser(
-        prog='Tree Generator',
+        prog='treeGen.py',
         description='Displays and analyses a tree to a specified depth')
-parser.add_argument('treeDirPath',
-                    help='Tree directory')
-parser.add_argument('processDepth',
-                    help='Depth to generate', type=int)
+parser.add_argument('processDepth', nargs='?',
+                    help='Depth to generate', type=int, default='10')
+parser.add_argument('treeDirPath', nargs='?',
+                    help='Tree directory', default='trees/curr/')
 parser.add_argument('-p', '--parentseq',
                     help='Parent seq toggle', action='store_true')
 parser.add_argument('-v', '--vis',

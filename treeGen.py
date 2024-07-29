@@ -6,6 +6,7 @@ from jsonParser import load_tree
 from subprocess import run
 from treeData import TreeData
 from format import print_title
+from utils import safe_div
 
 # Args
 parser = argparse.ArgumentParser(
@@ -21,6 +22,8 @@ parser.add_argument('-v', '--vis',
                     help='Visual output toggle', action='store_true')
 parser.add_argument('-r', '--extrarowdata',
                     help='Extra row data toggle', action='store_true')
+parser.add_argument('-rr', '--extrarowrats',
+                    help='Extra row ratios toggle', action='store_true')
 parser.add_argument('-nc', '--nocumsum',
                     help='Cumulative sum toggle', action='store_true')
 parser.add_argument('-nr', '--norows',
@@ -119,6 +122,12 @@ else:
 table["Row Ratios"] = [table["Row Sums"][i + 1] / table["Row Sums"][i]
                        for i in range(len(table["Row Sums"]) - 1)]
 table["Row Ratios"].insert(0, "inf")
+if args.extrarowrats:
+    row_rats = {}
+    for key in row_data[0].keys():
+        row_rats[key] = [safe_div(row_data[i + 1][key], row_data[i][key])
+                         for i in range(len(row_data) - 1)]
+        row_rats[key].insert(0, "inf")
 if args.arithmean:
     table["Ratio Avg (Arith)"] = [table["Row Ratios"][1]]
     for i, row_ratio in enumerate(table["Row Ratios"][2:], 1):
@@ -147,6 +156,9 @@ print(tabulate(table, headers="keys", floatfmt=float_format, intfmt=int_format))
 if args.extrarowdata:
     print_title("TYPES OF NODE IN EACH ROW")
     print(tabulate(row_data, headers="keys", intfmt=int_format))
+if args.extrarowrats:
+    print_title("RATIOS OF NODE TYPES IN EACH ROW")
+    print(tabulate(row_rats, headers="keys", floatfmt=float_format))
 if args.parentseq:
     print("Parent sequence:")
     print(parent_list)

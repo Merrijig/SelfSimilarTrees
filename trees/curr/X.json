@@ -1,1 +1,16 @@
-{"O": {"children": [{"O": {"children": [{"O": {"children": ["X"]}}, "X"]}}]}}
+{
+    "O": {
+        "children": [
+            {
+                "O": {
+                    "children": [
+                        "X"
+                    ]
+                }
+            },
+            "X",
+            "X",
+            "X"
+        ]
+    }
+}

@@ -1,6 +1,7 @@
 import argparse
 import os
 import formula
+import json
 
 parser = argparse.ArgumentParser(
         prog='makeTree.py',
@@ -26,6 +27,7 @@ if __name__ == '__main__':
 
     with open(args.treeDirPath + 'base.json', 'w') as base:
         base.write('''"''' + args.letter + '''"''')
+    rule_json = json.loads(tree.to_json())
     with open(args.treeDirPath + args.letter + '.json', 'w') as rule:
-        rule.write(tree.to_json())
+        rule.write(json.dumps(rule_json, indent=4))
     print(tree)

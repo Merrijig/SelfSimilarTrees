@@ -90,7 +90,7 @@ if args.vis or args.parentseq:
         nodes = sorted(nodes, key=lambda node: node.identifier)
         for node in nodes:
             node.tag = nameCount
-        nameCount += 1
+            nameCount += 1
 
         # Clean up stragglers
         nodes = tree.filter_nodes(lambda node:

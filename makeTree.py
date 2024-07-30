@@ -1,7 +1,11 @@
 import argparse
 import os
+import shutil
+import glob
 import formula
 import json
+
+tmp = 'trees/tmp/'
 
 parser = argparse.ArgumentParser(
         prog='makeTree.py',
@@ -18,12 +22,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
     tree = formula.interpret(args.treeFormula, args.letter)
 
-    try:
+    if os.path.exists(args.treeDirPath):
+        if os.path.exists(tmp):
+            shutil.rmtree(tmp)
+        os.makedirs(tmp)
+        for file in glob.glob('*', root_dir=args.treeDirPath):
+            os.rename(args.treeDirPath + file, tmp + file)
+        print('Directory already exists, existing files moved to ' + tmp)
+    else:
         os.makedirs(args.treeDirPath)
-    except FileExistsError:
-        # TODO: MOVE FILES
-        # print('Directory already exists, existing files moved to trees/tmp')
-        pass
 
     with open(args.treeDirPath + 'base.json', 'w') as base:
         base.write('''"''' + args.letter + '''"''')

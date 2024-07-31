@@ -39,6 +39,8 @@ parser.add_argument('-gm', '--geommean',
                     help='Geometric mean ratio toggle', action='store_true')
 parser.add_argument('-nra', '--noratio',
                     help='Row ratio toggle', action='store_true')
+parser.add_argument('-fr', '--finval',
+                    help='Only display final values', action='store_true')
 parser.add_argument('-fun', '--function', help='Graphvis function to use', default='dot')
 parser.add_argument('-isf', '--intsf',
                     help='Sig figs for integer values', default='8')
@@ -54,6 +56,7 @@ treeDirPath = args.treeDirPath
 processDepth = args.processDepth
 float_format = f".{args.floatdp}f"
 int_format = f".{args.intsf}g"
+val_slice = slice(-1, None) if args.finval else slice(None)
 
 # Take stock of node counts
 overall_sum = 0
@@ -127,11 +130,11 @@ table["Row Ratios"] = [table["Row Sums"][i + 1] / table["Row Sums"][i]
                        for i in range(len(table["Row Sums"]) - 1)]
 table["Row Ratios"].insert(0, "inf")
 if args.extrarowrats:
-    row_rats = {}
+    type_row_rats = {}
     for key in row_data[0].keys():
-        row_rats[key] = [safe_div(row_data[i + 1][key], row_data[i][key])
-                         for i in range(len(row_data) - 1)]
-        row_rats[key].insert(0, "inf")
+        type_row_rats[key] = [safe_div(row_data[i + 1][key], row_data[i][key])
+                              for i in range(len(row_data) - 1)]
+        type_row_rats[key].insert(0, "inf")
 if args.typerats:
     type_rats = [{key: (value / table["Row Sums"][i]) for key, value in row.items()}
                  for i, row in enumerate(row_data)]
@@ -169,20 +172,24 @@ if args.norows:
     del table["Row Sums"]
 if args.noratio:
     del table["Row Ratios"]
+# Adjust for finval option
+table = {key: table[key][val_slice] for key, value in table.items()}
 print_title("BASIC ROW DATA")
 print(tabulate(table, headers="keys", floatfmt=float_format, intfmt=int_format))
 if args.extrarowdata:
     print_title("TYPES OF NODE IN EACH ROW")
-    print(tabulate(row_data, headers="keys", intfmt=int_format))
+    print(tabulate(row_data[val_slice], headers="keys", intfmt=int_format))
 if args.extrarowrats:
+    type_row_rats = {key: type_row_rats[key][val_slice]
+                     for key, value in type_row_rats.items()}
     print_title("RATIOS OF NODE TYPES IN BETWEEN ROWS")
-    print(tabulate(row_rats, headers="keys", floatfmt=float_format))
+    print(tabulate(type_row_rats, headers="keys", floatfmt=float_format))
 if args.typerats:
     print_title("RATIOS OF NODE TYPES IN EACH ROW")
-    print(tabulate(type_rats, headers="keys", floatfmt=float_format))
+    print(tabulate(type_rats[val_slice], headers="keys", floatfmt=float_format))
 if args.typeratsrecur:
     print_title("RATIOS OF RECURSIVE NODE TYPES IN EACH ROW")
-    print(tabulate(type_rats_recur, headers="keys", floatfmt=float_format))
+    print(tabulate(type_rats_recur[val_slice], headers="keys", floatfmt=float_format))
 if args.parentseq:
     print("Parent sequence:")
     print(parent_list)

@@ -25,6 +25,10 @@ parser.add_argument('-r', '--extrarowdata',
                     help='Extra row data toggle', action='store_true')
 parser.add_argument('-rr', '--extrarowrats',
                     help='Extra row ratios toggle', action='store_true')
+parser.add_argument('-tr', '--typerats',
+                    help='Type ratios toggle', action='store_true')
+parser.add_argument('-trr', '--typeratsrecur',
+                    help='Recursive type ratios toggle', action='store_true')
 parser.add_argument('-nc', '--nocumsum',
                     help='Cumulative sum toggle', action='store_true')
 parser.add_argument('-nr', '--norows',
@@ -35,8 +39,7 @@ parser.add_argument('-gm', '--geommean',
                     help='Geometric mean ratio toggle', action='store_true')
 parser.add_argument('-nra', '--noratio',
                     help='Row ratio toggle', action='store_true')
-parser.add_argument('-fun', '--function',
-                    help='Graphvis function to use', default='dot')
+parser.add_argument('-fun', '--function', help='Graphvis function to use', default='dot')
 parser.add_argument('-isf', '--intsf',
                     help='Sig figs for integer values', default='8')
 parser.add_argument('-fdp', '--floatdp',
@@ -108,10 +111,10 @@ else:
 
     # Analyse
     for row in row_data:
-        sum = 0
+        row_sum = 0
         for node_type, num in row.items():
-            sum += num
-        table["Row Sums"].append(sum)
+            row_sum += num
+        table["Row Sums"].append(row_sum)
 
     if "Cumulative Sums" in table:
         table["Cumulative Sums"].append(table["Row Sums"][0])
@@ -129,6 +132,20 @@ if args.extrarowrats:
         row_rats[key] = [safe_div(row_data[i + 1][key], row_data[i][key])
                          for i in range(len(row_data) - 1)]
         row_rats[key].insert(0, "inf")
+if args.typerats:
+    type_rats = [{key: (value / table["Row Sums"][i]) for key, value in row.items()}
+                 for i, row in enumerate(row_data)]
+if args.typeratsrecur:
+    type_rats_recur = []
+    for row in row_data:
+        recur_sum = sum(row.values()) - row["O"]
+        sum_dict = {}
+        for key, value in row.items():
+            if key == "O":
+                continue
+            sum_dict[key] = value / recur_sum
+        type_rats_recur.append(sum_dict)
+
 if args.arithmean:
     table["Ratio Avg (Arith)"] = [table["Row Ratios"][1]]
     for i, row_ratio in enumerate(table["Row Ratios"][2:], 1):
@@ -158,8 +175,14 @@ if args.extrarowdata:
     print_title("TYPES OF NODE IN EACH ROW")
     print(tabulate(row_data, headers="keys", intfmt=int_format))
 if args.extrarowrats:
-    print_title("RATIOS OF NODE TYPES IN EACH ROW")
+    print_title("RATIOS OF NODE TYPES IN BETWEEN ROWS")
     print(tabulate(row_rats, headers="keys", floatfmt=float_format))
+if args.typerats:
+    print_title("RATIOS OF NODE TYPES IN EACH ROW")
+    print(tabulate(type_rats, headers="keys", floatfmt=float_format))
+if args.typeratsrecur:
+    print_title("RATIOS OF RECURSIVE NODE TYPES IN EACH ROW")
+    print(tabulate(type_rats_recur, headers="keys", floatfmt=float_format))
 if args.parentseq:
     print("Parent sequence:")
     print(parent_list)

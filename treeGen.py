@@ -39,7 +39,7 @@ parser.add_argument('-gm', '--geommean',
                     help='Geometric mean ratio toggle', action='store_true')
 parser.add_argument('-nra', '--noratio',
                     help='Row ratio toggle', action='store_true')
-parser.add_argument('-fr', '--finval',
+parser.add_argument('-fv', '--finval',
                     help='Only display final values', action='store_true')
 parser.add_argument('-fun', '--function', help='Graphvis function to use', default='dot')
 parser.add_argument('-isf', '--intsf',
